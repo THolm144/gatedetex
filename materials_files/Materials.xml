@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<materials>
+
+  <material name="G4_SILICON_DIOXIDE">
+    <propertiestable>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="1.455"/>
+        <ve energy="2.07" value="1.458"/>
+        <ve energy="2.48" value="1.462"/>
+        <ve energy="3.10" value="1.470"/>
+        <ve energy="4.13" value="1.485"/>
+        <ve energy="6.20" value="1.540"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="8.0"/>
+        <ve energy="6.20" value="8.0"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+  <material name="LuAg_Ce_WLS">
+    <propertiestable>
+      <!-- Decays at 70ns based on the Ce3+ transition lifetime -->
+      <property name="WLSTIMECONSTANT" value="70" unit="ns"/>
+
+      <!-- Self-scintillation: direct dE/dx in the fiber, matching Walker's
+           RADiCALsimLuAG DetectorConstruction.cc. His base yield is
+           22000 ph/MeV (RADICAL_SCINT_YIELD default 1.0), scaled by decay
+           60ns in his sim. Kept your 70ns Ce3+ decay here since it's the more
+           carefully sourced number and his sim's 60ns is close enough to be
+           a rounding choice, not a physics disagreement. Note: unlike DSB1,
+           there's no paper-tuned scale factor documented for LuAG in his
+           notes, so 22000 is the raw untuned default. Treat it as a starting
+           point to calibrate against detected photon counts, not a
+           validated final value. -->
+      <property name="SCINTILLATIONYIELD"          value="22000"/>
+      <property name="RESOLUTIONSCALE"              value="1.0"/>
+      <property name="SCINTILLATIONTIMECONSTANT1"   value="70" unit="ns"/>
+      <property name="SCINTILLATIONYIELD1"          value="1.0"/>
+
+      <!-- Self-scint emission spectrum: reuses the WLS emission shape below,
+           same fluorescence line whether excited by dE/dx directly or by an
+           absorbed LYSO photon. -->
+      <propertyvector name="SCINTILLATIONCOMPONENT1" energyunit="eV">
+        <ve energy="1.55" value="0.00"/>  <!-- 800nm cutoff -->
+        <ve energy="1.77" value="0.15"/>  <!-- 700nm -->
+        <ve energy="2.07" value="0.60"/>  <!-- 600nm -->
+        <ve energy="2.31" value="1.00"/>  <!-- 535nm, peak emission -->
+        <ve energy="2.48" value="0.45"/>  <!-- 500nm -->
+        <ve energy="2.61" value="0.00"/>  <!-- 475nm cutoff -->
+        <ve energy="6.20" value="0.00"/>
+      </propertyvector>
+
+      <!-- Refractive index flat across the emission spectrum at 1.84 -->
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="1.84"/>
+        <ve energy="2.00" value="1.84"/>
+        <ve energy="2.31" value="1.84"/>
+        <ve energy="2.61" value="1.84"/>
+        <ve energy="3.10" value="1.84"/>
+        <ve energy="6.20" value="1.84"/>
+      </propertyvector>
+
+      <!-- Bulk material absorption length: clear path length for shifted green light -->
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="5.0"/>
+        <ve energy="2.31" value="5.0"/>
+        <ve energy="6.20" value="5.0"/>
+      </propertyvector>
+
+      <!-- WLS Absorption Length: unchanged from your original -->
+      <propertyvector name="WLSABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="1000.0"/>
+        <ve energy="2.31" value="1000.0"/>
+        <ve energy="2.48" value="1.000"/>
+        <ve energy="2.64" value="0.005"/>
+        <ve energy="2.75" value="0.002"/>
+        <ve energy="2.90" value="0.005"/>
+        <ve energy="3.54" value="1000.0"/>
+        <ve energy="6.20" value="1000.0"/>
+      </propertyvector>
+
+      <!-- WLS Re-emission Spectrum: unchanged from your original -->
+      <propertyvector name="WLSCOMPONENT" energyunit="eV">
+        <ve energy="1.55" value="0.00"/>
+        <ve energy="1.77" value="0.15"/>
+        <ve energy="2.07" value="0.60"/>
+        <ve energy="2.31" value="1.00"/>
+        <ve energy="2.48" value="0.45"/>
+        <ve energy="2.61" value="0.00"/>
+        <ve energy="6.20" value="0.00"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+  
+  <material name="LYSO">
+    <propertiestable>
+      <property name="SCINTILLATIONYIELD"         value="33.2"/>
+      <property name="RESOLUTIONSCALE"            value="1.0"/>
+      <property name="SCINTILLATIONTIMECONSTANT1" value="36" unit="ns"/>
+      <property name="SCINTILLATIONYIELD1"        value="1.0"/>
+      <propertyvector name="SCINTILLATIONCOMPONENT1" energyunit="eV">
+        <ve energy="2.5" value="0.10"/>
+        <ve energy="2.6" value="0.25"/>
+        <ve energy="2.7" value="0.50"/>
+        <ve energy="2.8" value="0.80"/>
+        <ve energy="2.9" value="1.00"/>
+        <ve energy="3.0" value="0.80"/>
+        <ve energy="3.1" value="0.50"/>
+        <ve energy="3.2" value="0.25"/>
+        <ve energy="3.3" value="0.10"/>
+      </propertyvector>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="2.5" value="1.82"/>
+        <ve energy="3.3" value="1.82"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.771" value="0.3"/>
+        <ve energy="1.907" value="0.3"/>
+        <ve energy="2.066" value="0.3"/>
+        <ve energy="2.254" value="0.3"/>
+        <ve energy="2.480" value="0.3"/>
+        <ve energy="2.755" value="0.3"/>
+        <ve energy="2.883" value="0.3"/>
+        <ve energy="2.952" value="0.3"/>
+        <ve energy="3.024" value="0.3"/>
+        <ve energy="3.061" value="0.3"/>
+        <ve energy="3.100" value="0.3"/>
+        <ve energy="3.139" value="0.3"/>
+        <ve energy="3.179" value="0.3"/>
+        <ve energy="3.221" value="0.3"/>
+        <ve energy="3.263" value="0.3"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="G4_AIR">
+    <propertiestable>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="1.000277"/>
+        <ve energy="6.20" value="1.000277"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="50"/>
+        <ve energy="6.20" value="50"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="G4_WATER">
+    <propertiestable>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="1.333"/>
+        <ve energy="2.07" value="1.334"/>
+        <ve energy="2.48" value="1.336"/>
+        <ve energy="3.10" value="1.339"/>
+        <ve energy="4.13" value="1.344"/>
+        <ve energy="6.20" value="1.355"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="20.0"/>
+        <ve energy="6.20" value="20.0"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="G4_Si">
+    <propertiestable>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="3.5"/>
+        <ve energy="6.20" value="3.5"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="0.001"/>
+        <ve energy="6.20" value="0.001"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="ScintX">
+    <propertiestable>
+      <property name="SCINTILLATIONYIELD"         value="100"/>
+      <property name="RESOLUTIONSCALE"            value="1.0"/>
+      <property name="SCINTILLATIONTIMECONSTANT1" value="2.0" unit="ns"/>
+      <property name="SCINTILLATIONYIELD1"        value="1.0"/>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="1.53"/>
+        <ve energy="2.07" value="1.53"/>
+        <ve energy="2.48" value="1.53"/>
+        <ve energy="3.10" value="1.53"/>
+        <ve energy="4.13" value="1.53"/>
+        <ve energy="6.20" value="1.53"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="2.0"/>
+        <ve energy="6.20" value="2.0"/>
+      </propertyvector>
+      <propertyvector name="SCINTILLATIONCOMPONENT1" energyunit="eV">
+        <ve energy="2.2000" value="0.000"/>
+        <ve energy="2.2576" value="0.086"/>
+        <ve energy="2.3105" value="0.110"/>
+        <ve energy="2.3674" value="0.121"/>
+        <ve energy="2.4797" value="0.181"/>
+        <ve energy="2.5777" value="0.292"/>
+        <ve energy="2.6355" value="0.354"/>
+        <ve energy="2.6802" value="0.459"/>
+        <ve energy="2.7462" value="0.627"/>
+        <ve energy="2.8509" value="0.799"/>
+        <ve energy="2.8868" value="0.923"/>
+        <ve energy="2.9307" value="1.000"/>
+        <ve energy="2.9610" value="0.953"/>
+        <ve energy="2.9878" value="0.841"/>
+        <ve energy="2.9999" value="0.757"/>
+        <ve energy="3.0260" value="0.659"/>
+        <ve energy="3.0644" value="0.561"/>
+        <ve energy="3.0996" value="0.463"/>
+        <ve energy="3.1190" value="0.323"/>
+        <ve energy="3.1446" value="0.170"/>
+        <ve energy="3.2000" value="0.000"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="Quartz">
+    <propertiestable>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="1.455"/>
+        <ve energy="2.07" value="1.458"/>
+        <ve energy="2.48" value="1.462"/>
+        <ve energy="3.10" value="1.470"/>
+        <ve energy="4.13" value="1.485"/>
+        <ve energy="6.20" value="1.540"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="500.0"/>
+        <ve energy="6.20" value="500.0"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="DSB1">
+    <propertiestable>
+      <!-- Extremely fast organic decay time constant (3.5ns) -->
+      <property name="WLSTIMECONSTANT" value="3.5" unit="ns"/>
+
+      <!-- Self-scintillation: direct dE/dx in the fiber, matching Walker's
+           RADiCALsimDSB DetectorConstruction.cc:162-166. His code default is
+           10000 ph/MeV (RADICAL_SCINT_YIELD=1.0), but his own validation found
+           that overshoots the paper's real light yield by about 15x (373
+           detected pe/MeV in fiber vs paper's about 25 npe/MeV). His actual
+           paper-matched production run used RADICAL_SCINT_YIELD=0.07, i.e.
+           10000 times 0.07 = 700 ph/MeV. Using that tuned value here. See
+           CLAUDE.md, "YIELD-SWEEP POSTMORTEM" section. -->
+      <property name="SCINTILLATIONYIELD"          value="700"/>
+      <property name="RESOLUTIONSCALE"              value="1.0"/>
+      <property name="SCINTILLATIONTIMECONSTANT1"   value="3.5" unit="ns"/>
+      <property name="SCINTILLATIONYIELD1"          value="1.0"/>
+
+      <!-- Self-scint emission spectrum: reuses the WLS emission shape below,
+           since it's the same DSB1 fluorescence line whether excited by
+           dE/dx directly or by an absorbed LYSO photon. -->
+      <propertyvector name="SCINTILLATIONCOMPONENT1" energyunit="eV">
+        <ve energy="1.55" value="0.00"/>  <!-- 800nm cutoff -->
+        <ve energy="1.90" value="0.05"/>  <!-- 652nm -->
+        <ve energy="2.15" value="0.30"/>  <!-- 576nm -->
+        <ve energy="2.35" value="0.75"/>  <!-- 527nm -->
+        <ve energy="2.51" value="1.00"/>  <!-- 494nm, true peak of DSB1 emission -->
+        <ve energy="2.58" value="0.40"/>  <!-- 480nm -->
+        <ve energy="2.64" value="0.00"/>  <!-- 470nm cutoff -->
+        <ve energy="6.20" value="0.00"/>
+      </propertyvector>
+
+      <!-- Refractive index typical for organic plastic WLS filament cores -->
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="1.57"/>
+        <ve energy="6.20" value="1.57"/>
+      </propertyvector>
+
+      <!-- Bulk material absorption length: transparent to its own shifted light -->
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="10.0"/>
+        <ve energy="6.20" value="10.0"/>
+      </propertyvector>
+
+      <!-- WLS Absorption Length: unchanged from your original -->
+      <!-- WLS Absorption Length: Matched to Walker's C++ setup -->
+      <propertyvector name="WLSABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="1000.0"/>
+        <ve energy="2.40" value="1000.0"/>
+        <ve energy="2.48" value="5.000"/>
+        <ve energy="2.55" value="5.000"/>   <!-- Raised from 0.1m to 5m to eliminate self-absorption at 494 nm -->
+        <ve energy="2.70" value="0.002"/>   <!-- Matched to Walker's 2.0 mm (0.002 m) -->
+        <ve energy="2.95" value="0.002"/>   <!-- Matched to Walker's 2.0 mm at LYSO peak (~420 nm) -->
+        <ve energy="3.54" value="0.002"/>   <!-- Matched to Walker's 2.0 mm -->
+        <ve energy="6.20" value="1000.0"/>
+      </propertyvector>
+
+      <!-- WLS Re-emission Spectrum: unchanged from your original -->
+      <propertyvector name="WLSCOMPONENT" energyunit="eV">
+        <ve energy="1.55" value="0.00"/>
+        <ve energy="1.90" value="0.05"/>
+        <ve energy="2.15" value="0.30"/>
+        <ve energy="2.35" value="0.75"/>
+        <ve energy="2.51" value="1.00"/>
+        <ve energy="2.58" value="0.40"/>
+        <ve energy="2.64" value="0.00"/>
+        <ve energy="6.20" value="0.00"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="Air">
+    <propertiestable>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="1.000277"/>
+        <ve energy="6.20" value="1.000277"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="50.0"/>
+        <ve energy="6.20" value="50.0"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="Tungsten">
+    <propertiestable>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="3.4"/>
+        <ve energy="6.20" value="3.4"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="1e-6"/>
+        <ve energy="6.20" value="1e-6"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="Tyvek">
+    <propertiestable>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.55" value="1.57"/>
+        <ve energy="6.20" value="1.57"/>
+      </propertyvector>
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.55" value="0.001"/>
+        <ve energy="6.20" value="0.001"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+  <material name="BCF92">
+    <propertiestable>
+      <property name="WLSTIMECONSTANT" value="2.7" unit="ns"/>
+      
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.00" value="1.60"/>
+        <ve energy="2.00" value="1.60"/>
+        <ve energy="2.25" value="1.60"/>
+        <ve energy="2.48" value="1.60"/>
+        <ve energy="2.52" value="1.60"/>
+        <ve energy="2.64" value="1.60"/>
+        <ve energy="2.76" value="1.60"/>
+        <ve energy="2.88" value="1.60"/>
+        <ve energy="3.02" value="1.60"/>
+        <ve energy="3.10" value="1.60"/>
+        <ve energy="3.31" value="1.60"/>
+      </propertyvector>
+      
+      <propertyvector name="ABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.00" value="3.5"/>
+        <ve energy="2.00" value="3.5"/>
+        <ve energy="2.25" value="3.5"/>
+        <ve energy="2.48" value="3.5"/>
+        <ve energy="2.52" value="3.5"/>
+        <ve energy="2.64" value="3.5"/>
+        <ve energy="2.76" value="3.5"/>
+        <ve energy="2.88" value="3.5"/>
+        <ve energy="3.02" value="3.5"/>
+        <ve energy="3.10" value="3.5"/>
+        <ve energy="3.31" value="3.5"/>
+      </propertyvector>
+      
+      <propertyvector name="WLSABSLENGTH" unit="m" energyunit="eV">
+        <ve energy="1.00" value="10000.0"/>
+        <ve energy="2.00" value="10000.0"/>
+        <ve energy="2.25" value="10000.0"/>
+        <ve energy="2.48" value="10000.0"/>
+        <ve energy="2.52" value="8.0"/>
+        <ve energy="2.64" value="1.0"/>
+        <ve energy="2.76" value="0.050"/>
+        <ve energy="2.88" value="0.003"/>
+        <ve energy="3.02" value="0.0003"/>
+        <ve energy="3.10" value="0.0005"/>
+        <ve energy="3.31" value="0.001"/>
+      </propertyvector>
+      
+      <propertyvector name="WLSCOMPONENT" energyunit="eV">
+        <ve energy="1.00" value="0.00"/>
+        <ve energy="2.00" value="0.00"/>
+        <ve energy="2.25" value="0.30"/>
+        <ve energy="2.48" value="0.90"/>
+        <ve energy="2.52" value="1.00"/>
+        <ve energy="2.64" value="0.55"/>
+        <ve energy="2.76" value="0.10"/>
+        <ve energy="2.88" value="0.00"/>
+        <ve energy="3.02" value="0.00"/>
+        <ve energy="3.10" value="0.00"/>
+        <ve energy="3.31" value="0.00"/>
+      </propertyvector>
+    </propertiestable>
+</material>
+  
+
+  <material name="Galactic">
+    <propertiestable>
+      <propertyvector name="RINDEX" energyunit="eV">
+        <ve energy="1.50" value="1.0"/>
+        <ve energy="6.50" value="1.0"/>
+      </propertyvector>
+    </propertiestable>
+  </material>
+
+</materials>
