@@ -61,7 +61,7 @@ from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 import numpy as np
 
-import analysis_utils as utils
+import example_analysis_scripts.analysis_utils as utils
 
 
 # ─────────────────────────────────────────────────────────────────────────────

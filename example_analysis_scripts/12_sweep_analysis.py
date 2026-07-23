@@ -930,7 +930,7 @@ def main():
     layers = np.arange(1, _N_LYSO + 1)
 
     try:
-        import analysis_utils as utils
+        import example_analysis_scripts.analysis_utils as utils
     except ImportError:
         utils = None
 

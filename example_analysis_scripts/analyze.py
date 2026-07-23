@@ -16,7 +16,7 @@ import os
 import sys
 from pathlib import Path
 
-import analysis_utils as utils
+import example_analysis_scripts.analysis_utils as utils
 
 
 # ─────────────────────────────────────────────────────────────────────────────

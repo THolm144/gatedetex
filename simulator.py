@@ -57,11 +57,11 @@ def parse_args():
 # ─────────────────────────────────────────────────────────────────────────────
 
 def load_world(world_name: str, script_dir: Path):
-    sys.path.insert(0, str(script_dir / "worlds"))
+    sys.path.insert(0, str(script_dir / "world_modules"))
     try:
         return importlib.import_module(world_name)
     except ModuleNotFoundError:
-        print(f"ERROR: world module '{world_name}' not found in worlds/")
+        print(f"ERROR: world module '{world_name}' not found in world_modules/")
         sys.exit(1)
 
 
@@ -90,7 +90,7 @@ def resolve_output_dirs(args, script_dir: Path) -> tuple[Path, Path]:
         batch_dir = Path(args.output_dir)
     else:
         ts        = datetime.now().strftime("%Y%m%d_%H%M%S")
-        batch_dir = script_dir / "runs" / args.world / f"{int(args.energy_kev)}keV_{ts}"
+        batch_dir = script_dir / "outputs" / args.world / f"{ts}_{int(args.energy_kev)}keV"
 
     batch_dir.mkdir(parents=True, exist_ok=True)   # ← ADD THIS
     return batch_dir, batch_dir
