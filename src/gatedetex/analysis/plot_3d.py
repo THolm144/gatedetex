@@ -48,10 +48,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import importlib
 import json
-import os
-import sys
 from pathlib import Path
 
 import matplotlib
@@ -61,7 +58,8 @@ from matplotlib.lines import Line2D
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 import numpy as np
 
-import example_analysis_scripts.analysis_utils as utils
+from .. import worlds as _worlds
+from . import utils
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -103,11 +101,10 @@ def parse_args():
 # WORLD LOADING
 # ─────────────────────────────────────────────────────────────────────────────
 
-def load_world(world_name: str, script_dir: Path):
-    sys.path.insert(0, str(script_dir / "worlds"))
+def load_world(world_name: str):
     try:
-        return importlib.import_module(world_name)
-    except ModuleNotFoundError:
+        return _worlds.load_world(world_name)
+    except FileNotFoundError:
         return None
 
 
@@ -380,44 +377,43 @@ def render_view(ax, hit_x, hit_y, hit_z,
 # MAIN
 # ─────────────────────────────────────────────────────────────────────────────
 
-def main():
-    args       = parse_args()
-    script_dir = Path(__file__).resolve().parent
-    os.chdir(script_dir)
+def render_batch(batch_dir: str | Path | None = None, world: str | None = None,
+                  max_tracks: int = 300, max_optical_steps: int = 5000,
+                  dpi: int = 150, views: list[str] | None = None,
+                  base_dir: str | Path | None = None) -> list[Path]:
+    """Render 3-D views + a 2x2 panel for one batch. Returns the list of saved image paths."""
+    base = Path(base_dir).resolve() if base_dir else Path.cwd()
+    views = views or list(VIEW_PARAMS.keys())
 
-    batch_dir = utils.find_batch_dir(script_dir, args.world, args.batch_dir)
-    
+    resolved_batch_dir = utils.find_batch_dir(base, world, str(batch_dir) if batch_dir else None)
+
     # Grabs run folders if they exist; falls back to the batch folder itself if they don't
     try:
-        run_dirs = utils.find_runs(batch_dir)
+        run_dirs = utils.find_runs(resolved_batch_dir)
     except FileNotFoundError:
         print("  WARNING: No run_* subfolders found. Using batch directory as single run.")
-        run_dirs = [batch_dir]
-    run_dir   = run_dirs[0]
+        run_dirs = [resolved_batch_dir]
+    run_dir = run_dirs[0]
 
-    meta       = load_run_metadata(run_dir)
-    world_name = args.world or meta.get("world", "scintx_sipm_array")
-    world      = load_world(world_name, script_dir)
-    
+    meta = load_run_metadata(run_dir)
+    world_name = world or meta.get("world")
+    if not world_name:
+        raise ValueError("Could not determine world name; pass world=... explicitly.")
+    world_module = load_world(world_name)
+
     # Safely extract geometry array with fallbacks
-    phantom_cm = (world.PHANTOM_CM if world and hasattr(world, 'PHANTOM_CM')
-                  else meta.get("phantom_cm", [10.0, 10.0, 0.6]))
-    beam_cfg   = meta.get("beam_config", {})
+    phantom_cm = (world_module.PHANTOM_CM if world_module and hasattr(world_module, "PHANTOM_CM")
+                  else meta.get("phantom_cm", [10.0, 10.0, 10.0]))
+    beam_cfg = meta.get("beam_config", {})
 
-    # ── HARDCODED OVERRIDE FOR PHANTOM_CM ────────────────────────────────
-    if world_name == "scintx_sipm_array":
-        print("  [Override] Forcing PHANTOM_CM dimensions to: [10.0, 10.0, 0.6]")
-        phantom_cm = [10.0, 10.0, 0.6]
-        meta["phantom_cm"] = [10.0, 10.0, 0.6] # Sync back to dict just in case
-    # ─────────────────────────────────────────────────────────────────────
-
+    batch_dir = resolved_batch_dir
     print(f"  Batch dir   : {batch_dir}")
     print(f"  World       : {world_name}")
     print(f"  Phantom     : {phantom_cm}")
 
     # ── Geometry primitives ───────────────────────────────────────────────
-    if world and hasattr(world, "get_geometry_primitives"):
-        primitives = world.get_geometry_primitives()
+    if world_module and hasattr(world_module, "get_geometry_primitives"):
+        primitives = world_module.get_geometry_primitives()
         print(f"  Geometry    : {len(primitives)} primitives from world hook")
     else:
         primitives = default_geometry_primitives(phantom_cm)
@@ -426,7 +422,7 @@ def main():
     geom_collections = build_geometry_collections(primitives)
 
     # ── Scatter data ──────────────────────────────────────────────────────
-    half       = args.max_tracks // 2
+    half       = max_tracks // 2
     hit_files  = list(run_dir.glob("detector_hits*.root"))
     exit_files = [run_dir / "optical_exited.root"]
 
@@ -436,7 +432,7 @@ def main():
 
     # ── Optical tracks ────────────────────────────────────────────────────
     track_root_path = run_dir / "optical_tracks.root"
-    optical_lines   = load_optical_tracks(track_root_path, args.max_optical_steps)
+    optical_lines   = load_optical_tracks(track_root_path, max_optical_steps)
     n_cer   = len(optical_lines["Cerenkov"])
     n_scint = len(optical_lines["Scintillation"])
     n_other = len(optical_lines["other"])
@@ -447,7 +443,7 @@ def main():
     # ── Individual views ──────────────────────────────────────────────────
     out_paths = []
 
-    for view_name in args.views:
+    for view_name in views:
         elev, azim, title = VIEW_PARAMS[view_name]
         print(f"  Rendering   : {view_name}")
 
@@ -463,14 +459,14 @@ def main():
         fig.suptitle(f"{world_name}  |  {title}", color="white", fontsize=9, y=0.98)
 
         out = batch_dir / f"3d_{view_name}.png"
-        fig.savefig(out, dpi=args.dpi, bbox_inches="tight",
+        fig.savefig(out, dpi=dpi, bbox_inches="tight",
                     facecolor="black", edgecolor="none")
         plt.close(fig)
         print(f"    → {out.name}")
         out_paths.append(out)
 
     # ── 2×2 panel ─────────────────────────────────────────────────────────
-    views_to_use = args.views[:4]
+    views_to_use = views[:4]
     n_cols = 2
     n_rows = (len(views_to_use) + 1) // 2
 
@@ -508,13 +504,23 @@ def main():
     )
 
     panel_out = batch_dir / "3d_panel.png"
-    fig.savefig(panel_out, dpi=args.dpi, bbox_inches="tight",
+    fig.savefig(panel_out, dpi=dpi, bbox_inches="tight",
                 facecolor="black", edgecolor="none")
     plt.close(fig)
     print(f"  → {panel_out.name}")
     out_paths.append(panel_out)
 
     print(f"\nDone. {len(out_paths)} images saved to {batch_dir}")
+    return out_paths
+
+
+def main():
+    """CLI entry point (also exposed as the `gatedetex-plot3d` console script)."""
+    args = parse_args()
+    render_batch(
+        batch_dir=args.batch_dir, world=args.world, max_tracks=args.max_tracks,
+        max_optical_steps=args.max_optical_steps, dpi=args.dpi, views=args.views,
+    )
 
 
 if __name__ == "__main__":

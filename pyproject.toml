@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gatedetex"
+version = "0.1.0"
+description = "Modular OpenGATE/Geant4 detector simulations, as an installable package."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "THolm144" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+dependencies = [
+    "opengate>=10.0",
+    "numpy",
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+# Reading PhaseSpaceActor ROOT output (hit/exit/timing analysis).
+analysis = ["uproot"]
+# Extra dependencies used by the advanced sweep scripts in examples/
+# (not required to install gatedetex, only to run those scripts).
+advanced = ["uproot", "pandas", "scipy"]
+dev = ["pytest"]
+
+[project.scripts]
+gatedetex-sim = "gatedetex.cli:sim_main"
+gatedetex-analyze = "gatedetex.cli:analyze_main"
+gatedetex-plot3d = "gatedetex.cli:plot3d_main"
+
+[project.urls]
+Homepage = "https://github.com/THolm144/gatedetex"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gatedetex"]
