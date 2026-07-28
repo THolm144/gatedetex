@@ -99,7 +99,7 @@ analyze_batch(batch_dir=result["batch_dir"])
 |---|---|
 | `quartz_cal` | Iron absorber + NxN quartz-crystal/SiPM scanner array |
 | `radi_cal_energy` | RADiCAL Shashlik calorimeter (LYSO/tungsten sampling stack) |
-| `scintx_sipm_array` | 10×10×0.6 cm ScintX scintillator slab with a 4-SiPM edge array |
+
 
 ## Writing a custom world
 
