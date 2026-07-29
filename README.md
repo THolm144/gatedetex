@@ -5,9 +5,7 @@ harness for running detector-physics simulations (dose, optical photons,
 SiPM hits, timing) against pluggable geometry modules ("worlds"), plus
 a matching batch-analysis toolkit.
 
-This is a packaged, installable version of the original `gatedetex`
-scripts. The simulation and analysis logic is unchanged; what changed is
-*how you get it onto your machine and run it*:
+
 
 - `pip install`-able, with a proper dependency list instead of "figure out
   what to `pip install` from the traceback".
